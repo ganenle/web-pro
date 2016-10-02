@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="Gary">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="五子棋">
+  <title>五子棋</title>
+  <!--css 化妆 整容 -->
+  <style typle="text/css">
+  *{margin:0;padding:0;}
+  body{background:url("images/3.jpg");background-size:cover;}
+  h1{font-size:25px;font-family:"华文行楷";text-align:center;line-height:100px;}
+  .box{width:600px;height:600px;margin:0 auto;position:relative;}
+  #chess{margin:0 auto;display:block;box-shadow:0px 0px 10px;background:#fff;}
+  .box .btn{width:50px;height:50px;background:url("images/7.png") center;position:absolute;top:80px;right:0;background-size:cover;}
+
+  .play{animation:play 3s linear infinite;}
+
+  /*定义一个关键帧*/
+  @keyframes play{
+	from{transform:rotate(0deg);}
+	to{transform:rotate(360deg);}
+  }
+  </style>
+ </head>
+ <body>
+  <div class="box">
+	<h1>人工智能五子棋</h1>
+	<canvas width="450" height="450" id="chess"></canvas><!--元素类型 行内块-->
+	<p class="btn" id="MBtn"></p>
+  </div>
+  <audio src="music.mp3" id="myMusic" style="display;block;" loop="true"></audio>
+  <!--html5 推动网页静态化 
+	  canvas 视频 音频 flash
+	  svg
+  -->
+  <script src="js/jquery-3.0.0.js"></script>
+  <script>
+	//点击播放暂停
+//0 1 3 7
+	var music_flag=1;
+	$("#myMusic").get(0).play();
+	$("#MBtn").toggleClass("play");
+	$(".btn").click(function(){
+		if(music_flag==0){
+			$("#myMusic").get(0).play();
+			music_flag=1;
+		}else{
+			$("#myMusic").get(0).pause();
+			music_flag=0;
+		}
+		$(this).toggleClass("play");
+	});
+
+	//拿到画板
+	var chess=document.getElementById("chess");
+	//拿到权限
+	var ctx = chess.getContext("2d");
+	//开始画画
+	
+	/*ctx.arc(50,50,50,0,Math.PI*2);
+	ctx.lineWidth = "5";//线条粗细
+	ctx.fillStyle = "#ffcc66";//填充颜色
+	ctx.fill();
+	ctx.stroke();*/
+	//画Logo 
+	var logo = new Image();
+	logo.src = "images/1.jpg";
+	
+	logo.onload = function(){
+		logo.style.opacity = 0.2;
+		ctx.drawImage(logo,50,50,350,350);
+		drawChessborad();
+	}
+
+	//画棋盘的方法
+	var drawChessborad = function(){
+		for(var i=0;i<15;i++){
+			ctx.moveTo(15+i*30,15);
+			ctx.lineTo(15+i*30,435);
+			ctx.stroke();
+			ctx.moveTo(15,15+i*30);
+			ctx.lineTo(435,15+i*30);
+			ctx.stroke();
+		}
+	}
+
+	//画棋子的方法
+	var onStep = function(x,y,me){
+		//画棋子
+		ctx.beginPath();//开始路径
+		ctx.arc(15+x*30,15+y*30,13,0,Math.PI*2);
+		ctx.closePath();//结束路径
+
+		var gradient = ctx.createRadialGradient(15+30*x+2,15+30*y-2,13,15+30*x+2,15+30*y-2,0);//创建镜像渐变
+		if(me){
+			gradient.addColorStop(0,"#0a0a0a");
+			gradient.addColorStop(1,"#636766");
+		}else{
+			gradient.addColorStop(0,"#d1d1d1");
+			gradient.addColorStop(1,"#f9f9f9");
+		}
+		ctx.fillStyle = gradient;
+		ctx.fill();
+		ctx.stroke();
+		
+	}
+
+	//定义一个二维数组来判断棋盘上的落子情况
+	var chessBoard = [];
+	var me = true;
+	for(var i = 0;i<15;i++){
+		chessBoard[i] = [];
+		for(var j=0;j<15;j++){
+			chessBoard[i][j] = 0;//代表没有落子
+		}
+	}
+	
+	//落棋子
+	chess.onclick = function(e){
+		var x = e.offsetX;
+		var y = e.offsetY;
+		console.log("x轴坐标："+x+",Y轴坐标"+y);
+		//鼠标范围30都可以
+		var i = Math.floor(x/30);//向下取整
+		var j = Math.floor(y/30);
+		if(chessBoard[i][j] == 0){
+			onStep(i,j,me);
+			if(me){
+				chessBoard[i][j] = 1;
+			}else{
+				chessBoard[i][j] = 2;
+			}
+			me = !me;
+		}
+	}
+  </script>
+
+ </body>
+</html>
