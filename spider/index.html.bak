@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="Generator" content="EditPlus®">
+		<meta name="Author" content="">
+		<meta name="Keywords" content="">
+		<meta name="Description" content="">
+		<title>网络抓取</title>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<!--css样式-->
+		<style>
+			*{
+				margin:0 auto;/*去掉默认的样式,*作用于所有div*/
+				padding:0;
+			}
+			body{
+				background:url("images/bg.png");
+				color:white;/*设置字体的颜色*/
+			}
+			/*LOGO的样式*/
+			.logo{
+				width:100%;/*宽度*/
+				height:54px;/*高度*/
+				background:#2f333b url("images/logo.png") no-repeat;/*背景颜色*/
+			}
+			/*搜索框的样式*/
+			.search{
+				width:552px;/*宽度*/
+				margin:35px auto;
+			}
+			/*网址输入框*/
+			#url{
+				width:452px;
+				height:30px;
+				border:0px;
+				line-height:30px;/*行高*/
+			}
+			/*给我抓取*/
+			#spider{
+				width:100px;
+				height:30px;
+				border:0px;
+				background:#77b500;
+				font-size:14px;
+			}
+
+			/*显示框的样式*/
+			.show{
+				width:920px;/*宽度*/
+				height:350px;/*高度*/
+				border:1px solid white;/*边框的粗细 边框的是实线还是虚线 边框的颜色*/
+				border-radius:8px;/*圆角边框 有些浏览器不支持*/
+				margin:35px auto;
+				overflow:auto;/*内容溢出自动隐藏，自动滚动条显示*/
+				font-size:13px;
+				display:none;/*隐藏 有jquery来实现显示*/
+			}
+		
+		</style>
+	</head>
+	<body>
+		<!--css样式名称 LOGO-->
+		<div class="logo"></div>
+
+		<!--搜索框-->
+		<div class="search">
+			<input type="text" id="url" value="http://www.zhaopin.com/beijing/"/><input type="button" id="spider" value="给我抓取"/>
+		</div>
+
+		<!--结果显示框-->
+		<div class="show">
+
+		</div>
+
+		<script typt="text/javascript">
+			//jquery的入口函数
+			$(document).ready(function(){
+				var xmlhttp;
+				$(".show").slideDown("slow");
+				$("#spider").click(function(){
+					//创建通信对象
+					if(window.XMLHttpRequest){
+						xmlhttp = new XMLHttpRequest();//浏览器内置对象，负责与服务器通信
+					}else{
+						alert("创建对象失败！本浏览器不支持异步通信,请更换浏览器！");
+						return;
+					}
+					//设置回调函数
+					xmlhttp.onreadystatechange = callback;//回调函数的名字
+					var url = $("#url").val();//获取输入框的内容
+					xmlhttp.open("GET",url,true);//提交方式 网址 异步(true)/同步(false)
+					//发送
+					xmlhttp.send();
+				});
+				function callback(){
+					/**
+					*0：请求未初始化（还没有调用open()）
+					*1：请求已经建立，但还没有发送（还没有调用send()）
+					*2：请求已发送，正在处理中（通常现在可以从响应中获取内容头）
+					*3：请求在处理中，通常响应中已有部分数据可用了，但服务器还没有完成响应的生成
+					*4：响应已完成，您可以获取并使用服务器的相应了
+					*/
+					if(xmlhttp.readyState == 4){
+						if(xmlhttp.status == 200){//服务器运行程序一切ok，成功返回正确结果，200是最成功的结果
+							var html = xmlhttp.responseText;
+							//正则表达式 (.*?) 括号：需要取出来的内容 .匹配任意一个非换行符的字符 *匹配多个非换行符 ?匹配截止
+							/*<a href="http://company.zhaopin.com/CC371706433.htm" onmousedown="return AdsClick(1137,9941)" target="_blank">天向优学(北京)教育科技有限公司</a>*/
+							var reg = /<a href=\"(.*?)\" onmousedown=\"return AdsClick\(.*\)\" target=\"_blank\">(.*?)<\/a>/;
+							var companys = [];//数组的声明
+							var i = 0;
+							for(;;){
+								var result = html.match(reg);
+								if(result != null){
+									//存进数组
+									companys.push({name:'cmpanys['+(i)+'].name',value:result[2]});
+									companys.push({name:'cmpanys['+(i)+'].url',value:result[1]});
+									i++;
+								}else{
+									break;
+								}
+								html = html.substring(result.lastIndex);//从新的位置截图内容
+							}
+							//上传到服务器
+							send(companys);
+						}
+					}
+				}
+				//将解析结果上传到服务器
+				function send(companys){
+					$.post('spider!save.action',//网址
+						companys,//数据
+						function(data){//返回处理
+							alert("success");
+						}
+					);
+				}
+			});
+		</script>
+	</body>
+</html>
