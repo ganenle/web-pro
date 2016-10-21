@@ -89,7 +89,7 @@
 					//设置回调函数
 					xmlhttp.onreadystatechange = callback;//回调函数的名字
 					var url = $("#url").val();//获取输入框的内容
-					xmlhttp.open("GET",url,true);//提交方式 网址 异步(true)/同步(false)
+					xmlhttp.open("GET",url,false);//提交方式 网址 异步(true)/同步(false)
 					//发送
 					xmlhttp.send();
 				});
@@ -101,7 +101,9 @@
 					*3：请求在处理中，通常响应中已有部分数据可用了，但服务器还没有完成响应的生成
 					*4：响应已完成，您可以获取并使用服务器的相应了
 					*/
+					
 					if(xmlhttp.readyState == 4){
+						alert(xmlhttp.status);
 						if(xmlhttp.status == 200){//服务器运行程序一切ok，成功返回正确结果，200是最成功的结果
 							var html = xmlhttp.responseText;
 							//正则表达式 (.*?) 括号：需要取出来的内容 .匹配任意一个非换行符的字符 *匹配多个非换行符 ?匹配截止
@@ -116,13 +118,13 @@
 									companys.push({name:'cmpanys['+(i)+'].name',value:result[2]});
 									companys.push({name:'cmpanys['+(i)+'].url',value:result[1]});
 									i++;
+									html = html.substring(result.lastIndex);//从新的位置截图内容
 								}else{
 									break;
 								}
-								html = html.substring(result.lastIndex);//从新的位置截图内容
 							}
 							//上传到服务器
-							send(companys);
+							//send(companys);
 						}
 					}
 				}
