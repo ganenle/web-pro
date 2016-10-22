@@ -1,4 +1,4 @@
-package com.gary.jdbc;
+package com.jdbc.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,4 +1,4 @@
-package com.jdbc.dao;
+package com.jdbc.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,11 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Map;
 import java.sql.Date;
 import java.util.List;
-
-import com.gary.jdbc.DBUtil;
-import com.jdbc.model.Goddess;
 
 public class GoddessDao {
 	/**
@@ -73,27 +71,68 @@ public class GoddessDao {
 	public List<Goddess> query() throws Exception{
 		Connection conn = DBUtil.getConnection();
 		Statement sta = conn.createStatement();
-		ResultSet ret=sta.executeQuery("select user_name,age from imooc_goddess");
+		ResultSet rs=sta.executeQuery("select * from imooc_goddess");
 		List<Goddess> gs = new ArrayList<Goddess>();
 		Goddess g = null;
-		while(ret.next()){
+		while(rs.next()){
 			g = new Goddess();
-			g.setUser_name(ret.getString("user_name"));
-			g.setAge(ret.getInt("age"));
+			g.setId(rs.getInt("id"));
+			g.setUser_name(rs.getString("user_name"));
+			g.setAge(rs.getInt("age"));
+			g.setSex(rs.getInt("sex"));
+			g.setBirthday(rs.getDate("birthday"));
+			g.setEmail(rs.getString("email"));
+			g.setMobile(rs.getString("mobile"));
+			g.setCreate_date(rs.getDate("create_date"));
+			g.setCreate_user(rs.getString("create_user"));
+			g.setUpdate_date(rs.getDate("create_date"));
+			g.setUpdate_user(rs.getString("create_user"));
+			g.setIsdel(rs.getInt("isdel"));
 			gs.add(g);
 		}
 		return gs;
 	}
-	public Goddess get(Integer id) throws SQLException{
-		Goddess g = null;
+	public List<Goddess> querybyname(String name) throws SQLException{
+		List<Goddess> gl = new ArrayList<Goddess>();
 		Connection conn = DBUtil.getConnection();
-		String sql = ""+"select * from imooc_goddess"+
-		" where id=?";
+		StringBuilder sql = new StringBuilder();
+		sql.append("select * from imooc_goddess");
+		sql.append(" where user_name=?");
 		//Ô¤±àÒësqlÓï¾ä
-		PreparedStatement ptmt = conn.prepareStatement(sql);
+		PreparedStatement ptmt = conn.prepareStatement(sql.toString());
+		//¸øsqlÓï¾ä´«µÝ²ÎÊý
+		ptmt.setString(1, name);
+		ResultSet rs = ptmt.executeQuery();
+		Goddess g = null;
+		while(rs.next()){
+			g = new Goddess();
+			g.setId(rs.getInt("id"));
+			g.setUser_name(rs.getString("user_name"));
+			g.setAge(rs.getInt("age"));
+			g.setSex(rs.getInt("sex"));
+			g.setBirthday(rs.getDate("birthday"));
+			g.setEmail(rs.getString("email"));
+			g.setMobile(rs.getString("mobile"));
+			g.setCreate_date(rs.getDate("create_date"));
+			g.setCreate_user(rs.getString("create_user"));
+			g.setUpdate_date(rs.getDate("create_date"));
+			g.setUpdate_user(rs.getString("create_user"));
+			g.setIsdel(rs.getInt("isdel"));
+			gl.add(g);
+		}
+		return gl;
+	}
+	public Goddess querybyid(Integer id) throws SQLException{
+		Connection conn = DBUtil.getConnection();
+		StringBuilder sql = new StringBuilder();
+		sql.append("select * from imooc_goddess");
+		sql.append(" where id=?");
+		//Ô¤±àÒësqlÓï¾ä
+		PreparedStatement ptmt = conn.prepareStatement(sql.toString());
 		//¸øsqlÓï¾ä´«µÝ²ÎÊý
 		ptmt.setInt(1, id);
 		ResultSet rs = ptmt.executeQuery();
+		Goddess g = null;
 		while(rs.next()){
 			g = new Goddess();
 			g.setId(rs.getInt("id"));
@@ -110,6 +149,40 @@ public class GoddessDao {
 			g.setIsdel(rs.getInt("isdel"));
 		}
 		return g;
+	}
+	public List<Goddess> query(List<Map<String,Object>> params) throws SQLException{
+		List<Goddess> gl = new ArrayList<Goddess>();
+		Connection conn = DBUtil.getConnection();
+		StringBuilder sql = new StringBuilder();
+		sql.append("select * from imooc_goddess where 1=1");
+		if(params != null && params.size()>0){
+			for(int i = 0; i<params.size();i++){
+				Map<String, Object> map = params.get(i);
+				sql.append(" and "+map.get("name") + " " + map.get("rela")+ " " + map.get("value"));
+			}
+		}
+		//Ô¤±àÒësqlÓï¾ä
+		PreparedStatement ptmt = conn.prepareStatement(sql.toString());
+		//¸øsqlÓï¾ä´«µÝ²ÎÊý
+		ResultSet rs = ptmt.executeQuery();
+		Goddess g = null;
+		while(rs.next()){
+			g = new Goddess();
+			g.setId(rs.getInt("id"));
+			g.setUser_name(rs.getString("user_name"));
+			g.setAge(rs.getInt("age"));
+			g.setSex(rs.getInt("sex"));
+			g.setBirthday(rs.getDate("birthday"));
+			g.setEmail(rs.getString("email"));
+			g.setMobile(rs.getString("mobile"));
+			g.setCreate_date(rs.getDate("create_date"));
+			g.setCreate_user(rs.getString("create_user"));
+			g.setUpdate_date(rs.getDate("create_date"));
+			g.setUpdate_user(rs.getString("create_user"));
+			g.setIsdel(rs.getInt("isdel"));
+			gl.add(g);
+		}
+		return gl;
 	}
 	
 }
