@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>Java_filter</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+    <filter>
+        <filter-name>FirstFilter</filter-name>
+        <filter-class>com.gary.filter.MyFirstFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FirstFilter</filter-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </filter-mapping>
+    <!--  
+    <filter-mapping>
+        <filter-name>FirstFilter</filter-name>
+        <url-pattern>/main.jsp</url-pattern>
+    </filter-mapping>
+    -->
+    <filter>
+        <filter-name>SecondFilter</filter-name>
+        <filter-class>com.gary.filter.MySecondFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SecondFilter</filter-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </filter-mapping>
+    
+    <error-page>
+    	<error-code>404</error-code>
+    	<location>/err.jsp</location>
+    </error-page>
+    <filter>
+        <filter-name>ErrorFilter</filter-name>
+        <filter-class>com.gary.filter.ErrorFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ErrorFilter</filter-name>
+        <url-pattern>/err.jsp</url-pattern>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+  <servlet>
+    <description>This is the description of my J2EE component</description>
+    <display-name>This is the display name of my J2EE component</display-name>
+    <servlet-name>AsyncServlet</servlet-name>
+    <servlet-class>com.gary.servlet.AsyncServlet</servlet-class>
+        <enabled>true</enabled>
+        <async-supported>true</async-supported>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>AsyncServlet</servlet-name>
+    <url-pattern>/com.gary.servlet/AsyncServlet</url-pattern>
+  </servlet-mapping>
+</web-app>
